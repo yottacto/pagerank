@@ -1,0 +1,14 @@
+[mask]
+policy = "deny"         # "allow" | "deny"
+selection = []
+
+[case.web]
+path = "../dataset/web-Google.txt"
+eps = 1e-6
+
+# [case.ny]
+# path = "../dataset/USA-road-d.NY.gr"
+
+# [case.usa]
+# path = "../dataset/USA-road-d.USA.gr"
+
