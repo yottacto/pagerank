@@ -138,8 +138,8 @@ struct pagerank
 
             auto comm_elapsed = comm_timer.elapsed_seconds();
             auto compute_elapsed = compute_timer.elapsed_seconds();
-            total_comm += comm_elapsed;
-            total_compute += compute_elapsed;
+            // total_comm += comm_elapsed;
+            // total_compute += compute_elapsed;
 
             if (Enabled) {
                 elapsed[0] = compute_elapsed;
@@ -157,20 +157,34 @@ struct pagerank
                         0
                     );
 
-                if (!rank)
-                    for (auto i = 0; i < size; i++)
+                if (!rank) {
+                    auto max_comp = 0.0;
+                    auto max_comm = 0.0;
+                    for (auto i = 0; i < size; i++) {
                         std::cerr << "rank: " << i
                             << ", compute " << std::setw(5) << elapsed[2 * i]
                             << ", comm " << std::setw(5) << elapsed[2 * i + 1]
                             << std::endl;
+                        max_comp = std::max(max_comp, elapsed[2 * i]);
+                        max_comm = std::max(max_comm, elapsed[2 * i + 1] + elapsed[2 * i]);
+                    }
+                    if (max_comm < max_comp)
+                        special_round = iter;
+                    total_comm += std::max(max_comm - max_comp, 0.);
+                    total_compute += max_comp;
+                    std::cerr << "rank: a"
+                        << ", compute " << std::setw(5) << max_comp
+                        << ", comm " << std::setw(5) << max_comm
+                        << std::endl;
+                }
             }
 
             print<Enabled>("\n");
         }
 
-        auto total = total_timer.elapsed_seconds();
-        MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, &total_compute, 1, MPI::DOUBLE, MPI::MAX);
-        MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, &total_comm,    1, MPI::DOUBLE, MPI::MAX);
+        total = total_timer.elapsed_seconds();
+        // MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, &total_compute, 1, MPI::DOUBLE, MPI::MAX);
+        // MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, &total_comm,    1, MPI::DOUBLE, MPI::MAX);
         MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, &total,         1, MPI::DOUBLE, MPI::MAX);
         print<Enabled>("total compute elapsed ", total_compute, ", ");
         print<Enabled>("total comm elapsed ", total_comm, "\n");
@@ -368,6 +382,9 @@ struct pagerank
             for (auto i = 0; i < n; i++)
                 sum += pr[i];
             std::cerr << "\nall pr value avg: " << sum / n << "\n\n";
+
+            std::cerr << "speical round: " << special_round << "\n";
+            std::cerr << "| " << size << " | " << iter - 1 << " | " << total << " | " << total_comm << " | " << total_compute << "\n";
         }
     }
 
@@ -397,7 +414,9 @@ struct pagerank
     std::vector<double> recv_buf;
 
     // statistic
+    int special_round{-1};
     std::vector<std::vector<int>> updated;
+    double total;
     double total_compute;
     double total_comm;
     timer compute_timer;
