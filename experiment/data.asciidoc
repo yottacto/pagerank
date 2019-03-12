@@ -1,0 +1,47 @@
+:toc:
+
+= Results of PageRank
+
+== Environment
+
+.ipe cluster
+* CPU: Intel(R) Xeon(R) CPU E5-2680 v4 (56) @ 2.40GHz
+* Memory: 125.925G
+
+.software
+* MPI: Open MPI 3.0.0
+* Compiler: gcc version 5.5.0
+* Graph Partition: metis 5.1.0 (using default parameter)
+
+== Dataset
+
+https://snap.stanford.edu/data/web-Google.html[Google web graph] with `875,713`
+nodes and `5,105,039` edges. Nodes represent web pages and directed edges
+represent hyperlinks between them. The data was released in 2002 by Google as a
+part of Google Programming Contest.
+
+== Results
+
+All time are in seconds.
+
+=== random partition
+
+
+=== continuous partition
+
+
+=== metis partition
+
+[cols="^.^4, ^.^3, ^.^3, ^.^4, ^.^3", options="header"]
+|====
+
+| number of host / graph partition | convergence round | total time | total communication time | total computation time
+| 4                                | 35                | 1.623      | 0.106                    | 1.505
+| 8                                | 35                | 0.845      | 0.14                     | 0.692
+| 12                               | 35                | 0.865      | 0.192                    | 0.663
+| 16                               | 35                | 0.741      | 0.187                    | 0.536
+| 20                               | 35                | 0.888      | 0.301                    | 0.578
+| 24                               | 35                | 0.81       | 0.301                    | 0.498
+
+|====
+
