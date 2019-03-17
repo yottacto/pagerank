@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include <mpi.h>
 #include "util.hh"
 #include "timer.hh"
@@ -72,10 +73,10 @@ struct pagerank
             auto value = recv_buf[i + 1];
             if (u == -1)
                 continue;
-            pr[u] = value;
+            mpr[std::lround(u)] = value;
         }
         for (auto u : nodes)
-            pr[u] = info[u].pr;
+            mpr[u] = info[u].pr;
     }
 
     void compute_core()
@@ -84,13 +85,13 @@ struct pagerank
         for (auto u : nodes) {
             auto sum = 0.;
             for (auto v : g[u])
-                sum += pr[v] / info[v].edge_count;
+                sum += mpr[v] / info[v].edge_count;
             info[u].pr = damping * sum + (1. - damping) / n;
             if (info[u].boundary) {
                 recv_buf.emplace_back(u);
                 recv_buf.emplace_back(info[u].pr);
             }
-            if (std::fabs(info[u].pr - pr[u]) > eps) {
+            if (std::fabs(info[u].pr - mpr[u]) > eps) {
                 updated_count++;
             } else {
                 converge_count++;
@@ -110,13 +111,18 @@ struct pagerank
         total_compute = total_comm = 0.;
 
         total_timer.restart();
-        pr.clear();
-        pr.resize(n, 1. / n);
+        // pr.clear();
+        // pr.resize(n, 1. / n);
+        for (auto u = 0u; u < g.size(); u++) {
+            mpr[u] = 1. / n;
+            for (auto const& v : g[u])
+                mpr[v] = 1. / n;
+        }
 
         iter = 0;
         for (; converge_count < n; iter++) {
             print<Enabled>("iterating on ", iter, ", \n");
-            print<Enabled>("pr[0] ", pr[0], ", \n");
+            // print<Enabled>("pr[0] ", pr[0], ", \n");
 
             updated_count = 0;
             converge_count = 0;
@@ -336,7 +342,9 @@ struct pagerank
             bin_write(fout, &max_boundary_node_count);
         }
 
-        pr.resize(n, 1. / n);
+        // pr.resize(n, 1. / n);
+        mpr = static_cast<double*>(std::malloc(sizeof(double) * n));
+
         for (auto u : boundary_nodes)
             info[u].boundary = true;
 
@@ -376,6 +384,15 @@ struct pagerank
             }
         }
 
+        // TODO remove when remove mdist
+        pr.clear();
+        pr.resize(n, 1e99);
+        for (auto u = 0u; u < g.size(); u++) {
+            pr[u] = mpr[u];
+            for (auto const& v : g[u])
+                pr[v] = mpr[v];
+        }
+
         // FIXME pr value is not min across all ranks
         MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, pr.data(), n, MPI::INT, MPI::MIN);
         if (!rank) {
@@ -407,6 +424,8 @@ struct pagerank
 
     int iter;
     std::vector<double> pr;
+    double* mpr;
+
     double eps;
     double damping;
 
