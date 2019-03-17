@@ -376,6 +376,7 @@ struct pagerank
             }
         }
 
+        // FIXME pr value is not min across all ranks
         MPI::COMM_WORLD.Allreduce(MPI::IN_PLACE, pr.data(), n, MPI::INT, MPI::MIN);
         if (!rank) {
             auto sum = 0.;
