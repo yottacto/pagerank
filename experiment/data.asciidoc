@@ -69,3 +69,19 @@ All time are in seconds.
 
 |====
 
+
+=== metis partition with malloc (n * sizeof(double))
+
+[cols="^.^4, ^.^3, ^.^3, ^.^4, ^.^3", options="header"]
+|====
+
+| number of host / graph partition | convergence round | total time | total communication time | total computation time
+| 4 | 35 | 0.979 | 0.105 | 0.854
+| 8 | 35 | 0.714 | 0.16 | 0.541
+| 12 | 35 | 0.716 | 0.225 | 0.465
+| 16 | 35 | 0.636 | 0.232 | 0.383
+| 20 | 35 | 0.743 | 0.304 | 0.417
+| 24 | 35 | 0.723 | 0.307 | 0.396
+
+|====
+
