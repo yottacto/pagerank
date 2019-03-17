@@ -26,9 +26,33 @@ All time are in seconds.
 
 === random partition
 
+[cols="^.^4, ^.^3, ^.^3, ^.^4, ^.^3", options="header"]
+|====
+
+| number of host / graph partition | convergence round | total time | total communication time | total computation time
+| 4                                | 36                | 3.091      | 1.275                    | 1.808
+| 8                                | 36                | 4.066      | 2.275                    | 1.788
+| 12                               | 36                | 7.965      | 5.65                     | 2.3
+| 16                               | 36                | 7.045      | 4.222                    | 2.814
+| 20                               | 36                | 12.756     | 9.49                     | 3.295
+| 24                               | 36                | 14.891     | 11.166                   | 3.882
+
+|====
 
 === continuous partition
 
+[cols="^.^4, ^.^3, ^.^3, ^.^4, ^.^3", options="header"]
+|====
+
+| number of host / graph partition | convergence round | total time | total communication time | total computation time
+| 4 | 36 | 2.854 | 1.271 | 1.572
+| 8 | 36 | 4.089 | 2.358 | 1.721
+| 12 | 36 | 7.854 | 5.595 | 2.246
+| 16 | 36 | 7.097 | 4.284 | 2.807
+| 20 | 36 | 12.633 | 9.093 | 3.582
+| 24 | 36 | 14.861 | 11.227 | 3.812
+
+|====
 
 === metis partition
 
@@ -36,12 +60,12 @@ All time are in seconds.
 |====
 
 | number of host / graph partition | convergence round | total time | total communication time | total computation time
-| 4                                | 35                | 1.623      | 0.106                    | 1.505
-| 8                                | 35                | 0.845      | 0.14                     | 0.692
-| 12                               | 35                | 0.865      | 0.192                    | 0.663
-| 16                               | 35                | 0.741      | 0.187                    | 0.536
-| 20                               | 35                | 0.888      | 0.301                    | 0.578
-| 24                               | 35                | 0.81       | 0.301                    | 0.498
+| 4                                | 35                | 0.98       | 0.081                    | 0.892
+| 8                                | 35                | 0.673      | 0.121                    | 0.545
+| 12                               | 35                | 0.642      | 0.162                    | 0.469
+| 16                               | 35                | 0.594      | 0.189                    | 0.399
+| 20                               | 35                | 0.665      | 0.245                    | 0.399
+| 24                               | 35                | 0.686      | 0.276                    | 0.398
 
 |====
 
